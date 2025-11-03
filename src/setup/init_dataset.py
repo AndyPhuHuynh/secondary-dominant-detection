@@ -2,10 +2,10 @@ import os
 import kagglehub
 import shutil
 
-from src.paths import GTZAN_DIR
+from src.paths import GTZAN_DATA_DIR
 
 def ensure_gtzan_downloaded() -> bool:
-    if os.path.exists(GTZAN_DIR):
+    if os.path.exists(GTZAN_DATA_DIR):
         print("GTZAN already downloaded")
         return True
     print("Downloading GTZAN dataset from Kagglehub")
@@ -28,9 +28,9 @@ def ensure_gtzan_downloaded() -> bool:
         if not os.path.isdir(genres_path):
             raise FileNotFoundError(f"Could not locate 'genres' folder in {cache_path}")
 
-        os.makedirs(GTZAN_DIR, exist_ok=True)
-        shutil.copytree(genres_path, GTZAN_DIR, dirs_exist_ok=True)
-        print(f"GTZAN dataset copied to {GTZAN_DIR}")
+        os.makedirs(GTZAN_DATA_DIR, exist_ok=True)
+        shutil.copytree(genres_path, GTZAN_DATA_DIR, dirs_exist_ok=True)
+        print(f"GTZAN dataset copied to {GTZAN_DATA_DIR}")
 
         return True
     except Exception as e:

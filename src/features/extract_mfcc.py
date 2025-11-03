@@ -5,7 +5,7 @@ import numpy as np
 from sklearn.preprocessing import StandardScaler
 
 from src.dataset import Dataset
-from src.paths import GTZAN_DIR
+from src.paths import GTZAN_DATA_DIR, GTZAN_CACHE_DIR
 from src.features.labels import get_label
 
 SAMPLE_RATE = 22050
@@ -20,31 +20,38 @@ def extract_single_feature(file_path: str, scaler: StandardScaler):
     return mfcc_scaled
 
 
-def extract_features(dataset_path: str = GTZAN_DIR) -> tuple[StandardScaler, Dataset]:
+def extract_gtzan_features() -> tuple[StandardScaler, Dataset]:
     """
     Extracts MFCC features and genre labels from the GTZAN dataset
-    :param dataset_path: path to the GTZAN dataset which directly contains subdirectories of all the genres
     :return: (StandardScaler, Dataset) A dataset containing MFCC features and genre labels along with its scaler
     """
+    os.makedirs(GTZAN_CACHE_DIR, exist_ok=True)
     X = []
     y = []
-
-    genres = os.listdir(dataset_path)
+    genres = os.listdir(GTZAN_DATA_DIR)
     for genre in genres:
-        genre_dir = os.path.join(dataset_path, genre)
+        genre_dir = os.path.join(GTZAN_DATA_DIR, genre)
+        cache_dir = os.path.join(GTZAN_CACHE_DIR, genre)
+        os.makedirs(cache_dir, exist_ok=True)
         if not os.path.isdir(genre_dir):
             continue
 
         print(f"Extracting MFCC for {genre}")
         for filename in os.listdir(genre_dir):
+            cache_path = os.path.join(cache_dir, filename) + ".npz"
+            if os.path.exists(cache_path):
+                data = np.load(cache_path)
+                X.append(data["mfcc_mean"])
+                y.append(get_label(genre))
+                continue
+
             file_path = os.path.join(genre_dir, filename)
             try:
-                # Extract the waveform and sample rate
                 signal, sr = librosa.load(file_path, sr=SAMPLE_RATE)
-                # Extract mfcc data for the sample in intervals of short frames
                 mfcc = librosa.feature.mfcc(y=signal, sr=sr, n_mfcc=N_MFCC)
-                # Average each feature over all the time frames
                 mfcc_mean = np.mean(mfcc.T, axis=0)
+
+                np.savez(cache_path, mfcc_mean=mfcc_mean)
                 X.append(mfcc_mean)
                 y.append(get_label(genre))
             except Exception as e:
@@ -55,7 +62,6 @@ def extract_features(dataset_path: str = GTZAN_DIR) -> tuple[StandardScaler, Dat
     scaler = StandardScaler()
     X = scaler.fit_transform(X)
 
-    print(f"Extracted {len(X)} samples with {X.shape[1]} features each")
     return scaler, Dataset(X, y)
 
 
