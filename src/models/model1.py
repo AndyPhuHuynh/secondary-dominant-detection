@@ -31,18 +31,12 @@ def train_model1(dataset: Dataset):
     test_loss, test_acc = model.evaluate(test.X, y_test_cat, verbose=2)
 
     ratios: dict[int, float] = {}
-
+    y_predictions = np.argmax(model.predict(test.X, verbose=0), axis=1)
     for i in range(10):
-        total: int = 0
-        correct: int = 0
-        for j in range(len(test)):
-            if test.y[j] == i:
-                total += 1
-                prediction = model.predict(test.X[j].reshape(1, -1))
-                predicted_class = np.argmax(prediction)
-                if predicted_class == i:
-                    correct += 1
-        ratios[i] = 1.0 * correct / total
+        mask = test.y == i
+        total = np.sum(mask)
+        correct = np.sum(y_predictions[mask] == i)
+        ratios[i] = correct / total if total > 0 else 0
 
     print(f"Test accuracy: {test_acc * 100:.2f}%")
     print(f"Test loss: {test_loss:.4f}")
