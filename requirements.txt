@@ -1,6 +1,11 @@
-kagglehub
 librosa
 matplotlib
+midiutil
+music21
 numpy
 scikit-learn
+scipy
+soundfile
 tensorflow
+tqdm
+pedalboard

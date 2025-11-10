@@ -16,16 +16,15 @@ def plot_examples_one_each():
     fig, axes = plt.subplots(2, 5, figsize=(20, 8))  # 2 rows × 5 columns
     axes = axes.flatten()  # make it a 1D list for easy indexing
 
-    plot_mfcc(fig, axes, "data/GTZAN/blues/blues.00000.au",         0, "Blues")
-    plot_mfcc(fig, axes, "data/GTZAN/classical/classical.00000.au", 1, "Classical")
-    plot_mfcc(fig, axes, "data/GTZAN/country/country.00000.au",     2, "Country")
-    plot_mfcc(fig, axes, "data/GTZAN/disco/disco.00000.au",         3, "Disco")
-    plot_mfcc(fig, axes, "data/GTZAN/hiphop/hiphop.00000.au",       4, "Hip-hop")
-    plot_mfcc(fig, axes, "data/GTZAN/jazz/jazz.00000.au",           5, "Jazz")
-    plot_mfcc(fig, axes, "data/GTZAN/metal/metal.00000.au",         6, "Metal")
-    plot_mfcc(fig, axes, "data/GTZAN/pop/pop.00000.au",             7, "Pop")
-    plot_mfcc(fig, axes, "data/GTZAN/reggae/reggae.00000.au",       8, "Reggae")
-    plot_mfcc(fig, axes, "data/GTZAN/rock/rock.00000.au",           9, "Rock")
+    plot_mfcc(fig, axes, "data/samples/dry/dry_sine_000.wav",0, "Dry 0")
+    plot_mfcc(fig, axes, "data/samples/dry/dry_square_001.wav",1, "Dry 1")
+    plot_mfcc(fig, axes, "data/samples/dry/dry_triangle_002.wav",2, "Dry 2")
+    plot_mfcc(fig, axes, "data/samples/reverb/reverb_sine_000.wav",3, "Reverb 0")
+    plot_mfcc(fig, axes, "data/samples/reverb/reverb_square_001.wav",4, "Reverb 1")
+    plot_mfcc(fig, axes, "data/samples/reverb/reverb_triangle_002.wav",5, "Reverb 2")
+    plot_mfcc(fig, axes, "data/samples/distortion/distortion_sine_000.wav", 6, "Distortion 0")
+    plot_mfcc(fig, axes, "data/samples/distortion/distortion_square_001.wav", 7, "Distortion 1")
+    plot_mfcc(fig, axes, "data/samples/distortion/distortion_triangle_002.wav", 8, "Distortion 2")
 
     plt.tight_layout(pad=3.0)
     plt.show()

@@ -5,13 +5,13 @@ from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 
 from src.dataset import Dataset
-from src.features.extract_mfcc import split_dataset
+from src.features.mfcc import split_dataset
 
 def train_model1(dataset: Dataset):
     train, validation, test = split_dataset(dataset)
 
     num_features = train.X.shape[1]
-    num_classes = 10
+    num_classes = 2
 
     y_train_cat      = to_categorical(train.y,      num_classes)
     y_validation_cat = to_categorical(validation.y, num_classes)
@@ -32,7 +32,7 @@ def train_model1(dataset: Dataset):
 
     ratios: dict[int, float] = {}
     y_predictions = np.argmax(model.predict(test.X, verbose=0), axis=1)
-    for i in range(10):
+    for i in range(num_classes):
         mask = test.y == i
         total = np.sum(mask)
         correct = np.sum(y_predictions[mask] == i)
