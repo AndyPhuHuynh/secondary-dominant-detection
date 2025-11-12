@@ -1,7 +1,6 @@
 import os
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"]  = "2"
-import numpy as np
 
 from src.dataset.generate_dataset import SAMPLE_RATE
 from src.features.labels import get_effect_from_label
@@ -16,7 +15,7 @@ import subprocess
 
 sf2_path = Path("./soundfonts/FluidR3_GM.sf2").resolve()
 
-NUM_SONGS: int = 50
+NUM_SONGS: int = 10
 
 def generate_songs():
     os.makedirs(HAPPY_DIR, exist_ok=True)
@@ -27,7 +26,7 @@ def generate_songs():
         sad_mid = SAD_DIR/f"sad_{i:03}.mid"
         sad_wav = SAD_DIR/f"sad_{i:03}.wav"
 
-        happy_song = Song(is_happy=True)
+        happy_song = Song()
         happy_song.write(happy_mid)
         subprocess.run([
             "fluidsynth",
@@ -38,8 +37,11 @@ def generate_songs():
             happy_mid
         ], check=True, stdout=subprocess.DEVNULL)
         happy_mid.unlink()
+        print(f"Progression for {happy_mid}:")
+        for phrase in happy_song.phrases:
+            print(f"\t{phrase.progression}")
 
-        sad_song = Song(is_happy=False)
+        sad_song = Song()
         sad_song.write(sad_mid)
         subprocess.run([
             "fluidsynth",
@@ -52,8 +54,8 @@ def generate_songs():
         sad_mid.unlink()
 
 generate_songs()
-scaler, dataset = extract_mfcc_from_dataset(SAMPLE_RATE)
-
-model, history, ratios = train_model1(dataset)
-for effect, accuracy in ratios.items():
-    print(f"Accuracy for {get_effect_from_label(effect):<10} is {100 * accuracy:.2f}%")
+# scaler, dataset = extract_mfcc_from_dataset(SAMPLE_RATE)
+#
+# model, history, ratios = train_model1(dataset)
+# for effect, accuracy in ratios.items():
+#     print(f"Accuracy for {get_effect_from_label(effect):<10} is {100 * accuracy:.2f}%")
