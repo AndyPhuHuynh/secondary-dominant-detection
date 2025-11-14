@@ -1,6 +1,6 @@
 genre_labels: dict[str, int] = {
-    "happy": 0,
-    "sad":   1,
+    "diatonic": 0,
+    "non-diatonic":   1,
 }
 label_map = {v: k for k, v in genre_labels.items()}
 

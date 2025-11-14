@@ -12,4 +12,5 @@ FLUID_SF_NAME: str = "FluidR3_GM"
 FLUID_SF_PATH: Path = SOUNDFONTS_DIR / f"{FLUID_SF_NAME}.sf2"
 
 # DATA
-DIATONIC_DIR: Path = DATA_DIR / "diatonic"
+DIATONIC_DIR:     Path = DATA_DIR / "diatonic"
+NON_DIATONIC_DIR: Path = DATA_DIR / "non-diatonic"

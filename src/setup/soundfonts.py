@@ -5,7 +5,10 @@ import zipfile
 import src.paths as paths
 
 def download_soundfonts() -> None:
-    print("Downloading")
+    if paths.FLUID_SF_PATH.exists():
+        print(f"Soundfont already exists: {paths.FLUID_SF_PATH}")
+        return
+
     os.makedirs(paths.TEMP_DIR, exist_ok=True)
     os.makedirs(paths.SOUNDFONTS_DIR, exist_ok=True)
 
@@ -16,9 +19,6 @@ def download_soundfonts() -> None:
 
     os.makedirs(temp_soundfonts_path, exist_ok=True)
     os.makedirs(extract_path, exist_ok=True)
-    if paths.FLUID_SF_PATH.exists():
-        print(f"Soundfont already exists: {paths.FLUID_SF_PATH}")
-        return
 
     print(f"Downloading Soundfont from {paths.FLUID_SF_PATH}")
     download_url: str = "https://keymusician01.s3.amazonaws.com/FluidR3_GM.zip"
