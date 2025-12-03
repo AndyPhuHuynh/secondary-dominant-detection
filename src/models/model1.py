@@ -27,7 +27,7 @@ def train_model1(dataset: Dataset):
     ])
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(train.X, y_train_cat, validation_data=(validation.X, y_validation_cat), epochs=32, batch_size=32)
+    history = model.fit(train.X, y_train_cat, validation_data=(validation.X, y_validation_cat), epochs=64, batch_size=32)
     test_loss, test_acc = model.evaluate(test.X, y_test_cat, verbose=2)
 
     ratios: dict[int, float] = {}
