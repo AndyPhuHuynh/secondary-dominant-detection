@@ -20,18 +20,18 @@ def generate_songs():
     paths.DIATONIC_INFO.unlink(missing_ok=True)
     paths.NON_DIATONIC_INFO.unlink(missing_ok=True)
 
-    shutil.rmtree(paths.DIATONIC_DATA_DIR)
-    shutil.rmtree(paths.NON_DIATONIC_DATA_DIR)
-    paths.DIATONIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
-    paths.NON_DIATONIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    shutil.rmtree(paths.DATA_DIATONIC_DIR)
+    shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
+    paths.DATA_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
+    paths.DATA_NON_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
 
     paths.INFO_DIR.mkdir(parents=True, exist_ok=True)
     with paths.DIATONIC_INFO.open("w") as diatonic_info, \
         paths.NON_DIATONIC_INFO.open("w") as non_diatonic_info:
 
         for i in tqdm(range(NUM_SONGS), desc="Generating songs"):
-            diatonic_path     = paths.DIATONIC_DATA_DIR / f"diatonic_{i:03}.mid"
-            non_diatonic_path = paths.NON_DIATONIC_DATA_DIR / f"non_diatonic_{i:03}.mid"
+            diatonic_path     = paths.DATA_DIATONIC_DIR / f"diatonic_{i:03}.mid"
+            non_diatonic_path = paths.DATA_NON_DIATONIC_DIR / f"non_diatonic_{i:03}.mid"
 
             diatonic_song = Song(is_diatonic=True)
             non_diatonic_song = Song(is_diatonic=False)
@@ -45,9 +45,9 @@ def generate_songs():
 
 download_soundfonts()
 generate_songs()
-scaler, dataset = extract_mfcc_from_dataset(44100)
-print(dataset.X.shape)
+scaler, X, y = extract_mfcc_from_dataset(44100)
+print(X.shape)
 
-model, history, ratios = train_model1(dataset)
+model, history, ratios = train_model1(X, y)
 for effect, accuracy in ratios.items():
     print(f"Accuracy for {get_effect_from_label(effect):<10} is {100 * accuracy:.2f}%")

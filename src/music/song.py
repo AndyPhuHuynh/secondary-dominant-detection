@@ -11,7 +11,9 @@ from src.music.generation import (
     midi_to_wave
 )
 
-KEYS: list[music21.key.Key] = [music21.key.Key(k) for k in ["C", "E", "F", "G"]]
+
+PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
+KEYS = [music21.key.Key(p, 'major') for p in PITCHES]
 
 NUM_TRACKS:   int = 2
 CHORD_TRACK:  int = 0
@@ -58,7 +60,7 @@ class Song:
         with open(midi_path, "wb") as f:
             mf.writeFile(f)
 
-        midi_to_wave(midi_path, wave_path, paths.FLUID_SF_PATH)
+        midi_to_wave(midi_path, wave_path, paths.get_random_soundfont_path())
         midi_path.unlink()
 
 

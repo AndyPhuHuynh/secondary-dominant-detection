@@ -1,21 +1,31 @@
 import numpy as np
+import tensorflow as tf
+from sklearn.preprocessing import StandardScaler
 from tensorflow.keras import Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 
-from src.dataset import Dataset
 from src.features.mfcc import split_dataset
 
-def train_model1(dataset: Dataset):
-    train, validation, test = split_dataset(dataset)
+def train_model1(X: np.ndarray, y: np.ndarray):
+    X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y)
 
-    num_features = train.X.shape[1]
+    num_features = X.shape[1]
     num_classes = 2
 
-    y_train_cat      = to_categorical(train.y,      num_classes)
-    y_validation_cat = to_categorical(validation.y, num_classes)
-    y_test_cat       = to_categorical(test.y,       num_classes)
+    y_train_cat      = to_categorical(y_train, num_classes)
+    y_validation_cat = to_categorical(y_val,   num_classes)
+    y_test_cat       = to_categorical(y_test,  num_classes)
+
+    train_ds = tf.data.Dataset.from_tensor_slices((X_train, y_train_cat))
+    val_ds   = tf.data.Dataset.from_tensor_slices((X_val,   y_validation_cat))
+    test_ds  = tf.data.Dataset.from_tensor_slices((X_test,  y_test_cat))
+
+    batch_size = 32
+    train_ds = train_ds.shuffle(2048).batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    val_ds = val_ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
+    test_ds = test_ds.batch(batch_size).prefetch(tf.data.AUTOTUNE)
 
     model = Sequential([
         Input(shape=(num_features,)),
@@ -27,13 +37,18 @@ def train_model1(dataset: Dataset):
     ])
 
     model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-    history = model.fit(train.X, y_train_cat, validation_data=(validation.X, y_validation_cat), epochs=64, batch_size=32)
-    test_loss, test_acc = model.evaluate(test.X, y_test_cat, verbose=2)
+    history = model.fit(
+        train_ds,
+        validation_data=val_ds,
+        epochs=64, batch_size=32
+    )
+
+    test_loss, test_acc = model.evaluate(test_ds, verbose=2)
 
     ratios: dict[int, float] = {}
-    y_predictions = np.argmax(model.predict(test.X, verbose=0), axis=1)
+    y_predictions = np.argmax(model.predict(test_ds, verbose=0), axis=1)
     for i in range(num_classes):
-        mask = test.y == i
+        mask = y_test == i
         total = np.sum(mask)
         correct = np.sum(y_predictions[mask] == i)
         ratios[i] = correct / total if total > 0 else 0

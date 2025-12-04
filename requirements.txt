@@ -3,6 +3,7 @@ matplotlib
 midiutil
 music21
 numpy
+py7zr
 scikit-learn
 scipy
 soundfile
