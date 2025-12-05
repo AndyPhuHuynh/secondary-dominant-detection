@@ -1,14 +1,17 @@
 import music21
 import random
+import shutil
 from midiutil import MIDIFile
+from tqdm import tqdm
 from pathlib import Path
 
+import src.paths as paths
 from src.music.generation import (
     generate_diatonic_progression,
     generate_non_diatonic_progression,
     generate_roman_numerals,
-    midi_to_wave
 )
+from src.music.fluidsynth import midi_to_wave
 from src.soundfonts import get_random_soundfont_preset
 
 
@@ -70,8 +73,34 @@ class Song:
 
 
     def string_info(self) -> str:
-        info = f"{self.sf_preset["name"]:>15} {self.sf_preset["preset"]:>4}  {str(self.key):>2}"
+        info = f"{self.sf_preset["name"]:>20} {self.sf_preset["preset"]:>4}  {str(self.key):>10}"
         for numeral in self.progression:
-            info += f" {numeral:>5}"
+            info += f" {numeral:>10}"
         return info
 
+
+def generate_songs(num_songs: int = 50):
+    paths.INFO_DIATONIC_TXT.unlink(missing_ok=True)
+    paths.INFO_NON_DIATONIC_TXT.unlink(missing_ok=True)
+
+    shutil.rmtree(paths.DATA_DIATONIC_DIR)
+    shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
+    paths.DATA_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
+    paths.DATA_NON_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
+
+    paths.INFO_DIR.mkdir(parents=True, exist_ok=True)
+    with paths.INFO_DIATONIC_TXT.open("w") as diatonic_info, \
+        paths.INFO_NON_DIATONIC_TXT.open("w") as non_diatonic_info:
+
+        for i in tqdm(range(num_songs), desc="Generating songs"):
+            diatonic_path     = paths.DATA_DIATONIC_DIR / f"diatonic_{i:03}.mid"
+            non_diatonic_path = paths.DATA_NON_DIATONIC_DIR / f"non_diatonic_{i:03}.mid"
+
+            diatonic_song = Song(is_diatonic=True)
+            non_diatonic_song = Song(is_diatonic=False)
+
+            diatonic_song.write(diatonic_path)
+            non_diatonic_song.write(non_diatonic_path)
+
+            diatonic_info.write(f"{diatonic_song.string_info()}\n")
+            non_diatonic_info.write(f"{non_diatonic_song.string_info()}\n")

@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
 from src.paths import DATA_DIR
-from src.features.labels import get_label_from_effect
+from src.features.labels import get_label_string_to_num
 
 def extract_mfcc(file_path: str, sample_rate: int, n_mfcc: int = 13):
     try:
@@ -76,7 +76,7 @@ def extract_mfcc_from_dataset(sample_rate: int, n_mfcc: int = 13) -> tuple[Stand
 
                 feature_vec = np.concatenate((mean, std, min_, max_))
                 X.append(feature_vec)
-                y.append(get_label_from_effect(label))
+                y.append(get_label_string_to_num(label))
             except Exception as e:
                 print(f"Unable to process file '{filepath}': {e}")
     X = np.array(X)
