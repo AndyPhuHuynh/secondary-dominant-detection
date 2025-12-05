@@ -13,23 +13,14 @@ INFO_DIR:       Path = PROJECT_DIR / "info"
 DATA_DIATONIC_DIR:     Path = DATA_DIR / "diatonic"
 DATA_NON_DIATONIC_DIR: Path = DATA_DIR / "non-diatonic"
 
+# SOUNDFONTS
+SOUNDFONTS_CATALOG: Path = SOUNDFONTS_DIR / "catalog.json"
+SOUNDFONTS_SF2_DIR: Path = SOUNDFONTS_DIR / "sf2"
+
 # TEMP
 TEMP_SOUNDFONTS_DIR: Path = TEMP_DIR / "soundfonts"
+TEMP_FLUIDSYNTH_FSC: Path = TEMP_DIR / "select.fsc"
 
 # INFO
-DIATONIC_INFO:     Path = INFO_DIR / "diatonic.txt"
-NON_DIATONIC_INFO: Path = INFO_DIR / "non-diatonic.txt"
-
-
-_soundfont_cache: list[Path] | None = None
-
-
-def get_random_soundfont_path(force_refresh: bool = False) -> Path:
-    global _soundfont_cache
-    if _soundfont_cache is None or force_refresh:
-        _soundfont_cache = list(SOUNDFONTS_DIR.glob("*.sf2"))
-
-    if not _soundfont_cache:
-        raise FileNotFoundError(f"No .sf2 files found in {SOUNDFONTS_DIR}")
-
-    return random.choice(_soundfont_cache)
+INFO_DIATONIC_TXT:     Path = INFO_DIR / "diatonic.txt"
+INFO_NON_DIATONIC_TXT: Path = INFO_DIR / "non-diatonic.txt"

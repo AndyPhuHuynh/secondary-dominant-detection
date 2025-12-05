@@ -3,13 +3,13 @@ import random
 from midiutil import MIDIFile
 from pathlib import Path
 
-import src.paths as paths
 from src.music.generation import (
     generate_diatonic_progression,
     generate_non_diatonic_progression,
     generate_roman_numerals,
     midi_to_wave
 )
+from src.soundfonts import get_random_soundfont_preset
 
 
 PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
@@ -31,6 +31,7 @@ class Song:
             functions = generate_non_diatonic_progression(8)
         self.progression = generate_roman_numerals(functions)
         self.key = random.choice(KEYS)
+        self.sf_preset = get_random_soundfont_preset()
 
 
     def write(self, path: Path) -> None:
@@ -60,12 +61,16 @@ class Song:
         with open(midi_path, "wb") as f:
             mf.writeFile(f)
 
-        midi_to_wave(midi_path, wave_path, paths.get_random_soundfont_path())
+        midi_to_wave(midi_path, wave_path,
+            self.sf_preset["path"],
+            bank=self.sf_preset["bank"],
+            preset=self.sf_preset["preset"]
+        )
         midi_path.unlink()
 
 
     def string_info(self) -> str:
-        info = f"{str(self.key):>2}"
+        info = f"{self.sf_preset["name"]:>15} {self.sf_preset["preset"]:>4}  {str(self.key):>2}"
         for numeral in self.progression:
             info += f" {numeral:>5}"
         return info

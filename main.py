@@ -6,7 +6,7 @@ import shutil
 from tqdm import tqdm
 
 import src.paths as paths
-from src.setup.soundfonts import download_soundfonts
+from src.setup.soundfonts import setup_soundfonts
 
 from src.features.labels import get_effect_from_label
 from src.features.mfcc import extract_mfcc_from_dataset
@@ -17,8 +17,8 @@ from src.music.song import Song
 NUM_SONGS: int = 50
 
 def generate_songs():
-    paths.DIATONIC_INFO.unlink(missing_ok=True)
-    paths.NON_DIATONIC_INFO.unlink(missing_ok=True)
+    paths.INFO_DIATONIC_TXT.unlink(missing_ok=True)
+    paths.INFO_NON_DIATONIC_TXT.unlink(missing_ok=True)
 
     shutil.rmtree(paths.DATA_DIATONIC_DIR)
     shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
@@ -26,8 +26,8 @@ def generate_songs():
     paths.DATA_NON_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
 
     paths.INFO_DIR.mkdir(parents=True, exist_ok=True)
-    with paths.DIATONIC_INFO.open("w") as diatonic_info, \
-        paths.NON_DIATONIC_INFO.open("w") as non_diatonic_info:
+    with paths.INFO_DIATONIC_TXT.open("w") as diatonic_info, \
+        paths.INFO_NON_DIATONIC_TXT.open("w") as non_diatonic_info:
 
         for i in tqdm(range(NUM_SONGS), desc="Generating songs"):
             diatonic_path     = paths.DATA_DIATONIC_DIR / f"diatonic_{i:03}.mid"
@@ -43,10 +43,9 @@ def generate_songs():
             non_diatonic_info.write(f"{non_diatonic_song.string_info()}\n")
 
 
-download_soundfonts()
+setup_soundfonts()
 generate_songs()
 scaler, X, y = extract_mfcc_from_dataset(44100)
-print(X.shape)
 
 model, history, ratios = train_model1(X, y)
 for effect, accuracy in ratios.items():
