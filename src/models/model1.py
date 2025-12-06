@@ -1,12 +1,27 @@
 import numpy as np
 import tensorflow as tf
-from sklearn.preprocessing import StandardScaler
 from tensorflow.keras import Input
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 
 from src.features.mfcc import split_dataset
+
+
+def evaluate_predictions(model, test_ds, y_test, num_classes):
+    """
+    Wrapped in tf.function for graph optimization.
+    Computes per-class accuracy ratios.
+    """
+    y_predictions = np.argmax(model.predict(test_ds, verbose=0), axis=1)
+    ratios: dict[int, float] = {}
+    for i in range(num_classes):
+        mask = y_test == i
+        total = np.sum(mask)
+        correct = np.sum(y_predictions[mask] == i)
+        ratios[i] = correct / total if total > 0 else 0
+    return ratios
+
 
 def train_model1(X: np.ndarray, y: np.ndarray):
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y)
@@ -45,13 +60,7 @@ def train_model1(X: np.ndarray, y: np.ndarray):
 
     test_loss, test_acc = model.evaluate(test_ds, verbose=2)
 
-    ratios: dict[int, float] = {}
-    y_predictions = np.argmax(model.predict(test_ds, verbose=0), axis=1)
-    for i in range(num_classes):
-        mask = y_test == i
-        total = np.sum(mask)
-        correct = np.sum(y_predictions[mask] == i)
-        ratios[i] = correct / total if total > 0 else 0
+    ratios: dict[int, float] = evaluate_predictions(model, test_ds, y_test, num_classes)
 
     print(f"Test accuracy: {test_acc * 100:.2f}%")
     print(f"Test loss: {test_loss:.4f}")

@@ -83,8 +83,8 @@ def generate_songs(num_songs: int = 50):
     paths.INFO_DIATONIC_TXT.unlink(missing_ok=True)
     paths.INFO_NON_DIATONIC_TXT.unlink(missing_ok=True)
 
-    shutil.rmtree(paths.DATA_DIATONIC_DIR)
-    shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
+    if paths.DATA_DIATONIC_DIR.exists(): shutil.rmtree(paths.DATA_DIATONIC_DIR)
+    if paths.DATA_NON_DIATONIC_DIR.exists(): shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
     paths.DATA_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
     paths.DATA_NON_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
 
