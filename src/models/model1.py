@@ -5,7 +5,7 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Dropout
 from tensorflow.keras.utils import to_categorical
 
-from src.features.mfcc import split_dataset
+from src.utils import split_dataset
 
 
 def evaluate_predictions(model, test_ds, y_test, num_classes):

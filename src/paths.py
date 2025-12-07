@@ -8,6 +8,7 @@ SOUNDFONTS_DIR: Path = PROJECT_DIR / "soundfonts"
 TEMP_DIR:       Path = PROJECT_DIR / "temp"
 INFO_DIR:       Path = PROJECT_DIR / "info"
 GRAPHS_DIR:     Path = PROJECT_DIR / "graphs"
+CACHE_DIR:      Path = PROJECT_DIR / "cache"
 
 
 # DATA

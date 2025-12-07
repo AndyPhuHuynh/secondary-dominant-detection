@@ -19,38 +19,7 @@ def extract_mfcc(file_path: str, sample_rate: int, n_mfcc: int = 13):
         print(f"Unable to process file '{file_path}': {e}")
 
 
-def split_dataset(X: np.ndarray, y: np.ndarray) -> \
-        tuple[np.ndarray, np.ndarray, \
-                np.ndarray, np.ndarray, \
-                np.ndarray, np.ndarray]:
-    """
-    Splits dataset into training, validation, and test sets
-    :param X: Features of the dataset
-    :param y: Labels of the dataset
-    :return: (X_train, y_train, X_val, y_val, X_test, y_test): training, validation, and test sets
-    """
-    if len(X) != len(y):
-        raise ValueError("X and y must have the same length")
-
-    data_len = len(X)
-    shuffled_indices = [i for i in range(data_len)]
-    random.shuffle(shuffled_indices)
-
-    training_end_index: int = int(data_len * 0.6)
-    validation_end_index: int = training_end_index + int(data_len * 0.2)
-
-    train_indices      = shuffled_indices[:training_end_index]
-    validation_indices = shuffled_indices[training_end_index:validation_end_index]
-    test_indices       = shuffled_indices[validation_end_index:]
-
-    X_train, y_train = X[train_indices],      y[train_indices]
-    X_val,   y_val   = X[validation_indices], y[validation_indices]
-    X_test,  y_test  = X[test_indices],       y[test_indices]
-
-    return X_train, y_train, X_val, y_val, X_test, y_test
-
-
-def extract_mfcc_from_dataset(sample_rate: int, n_mfcc: int = 13) -> tuple[StandardScaler, np.ndarray, np.ndarray]:
+def extract_mfcc_from_dataset(sample_rate: int, n_mfcc: int = 13) -> tuple[np.ndarray, np.ndarray]:
     """
     Extracts MFCC features and effect labels from the dataset
     :return: (StandardScaler, X, y) A dataset containing MFCC features and genre labels along with its scaler
@@ -82,7 +51,4 @@ def extract_mfcc_from_dataset(sample_rate: int, n_mfcc: int = 13) -> tuple[Stand
     X = np.array(X)
     y = np.array(y)
 
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
-
-    return scaler, X, y
+    return X, y
