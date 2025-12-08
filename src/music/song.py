@@ -15,7 +15,8 @@ from src.music.fluidsynth import midi_to_wave
 from src.soundfonts import get_random_soundfont_preset
 
 
-PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
+# PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
+PITCHES = ["C"]
 KEYS = [music21.key.Key(p, 'major') for p in PITCHES]
 
 NUM_TRACKS:   int = 2
@@ -77,30 +78,3 @@ class Song:
         for numeral in self.progression:
             info += f" {numeral:>10}"
         return info
-
-
-def generate_songs(num_songs: int = 50):
-    paths.INFO_DIATONIC_TXT.unlink(missing_ok=True)
-    paths.INFO_NON_DIATONIC_TXT.unlink(missing_ok=True)
-
-    if paths.DATA_DIATONIC_DIR.exists(): shutil.rmtree(paths.DATA_DIATONIC_DIR)
-    if paths.DATA_NON_DIATONIC_DIR.exists(): shutil.rmtree(paths.DATA_NON_DIATONIC_DIR)
-    paths.DATA_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
-    paths.DATA_NON_DIATONIC_DIR.mkdir(parents=True, exist_ok=True)
-
-    paths.INFO_DIR.mkdir(parents=True, exist_ok=True)
-    with paths.INFO_DIATONIC_TXT.open("w") as diatonic_info, \
-        paths.INFO_NON_DIATONIC_TXT.open("w") as non_diatonic_info:
-
-        for i in tqdm(range(num_songs), desc="Generating songs"):
-            diatonic_path     = paths.DATA_DIATONIC_DIR / f"diatonic_{i:03}.mid"
-            non_diatonic_path = paths.DATA_NON_DIATONIC_DIR / f"non_diatonic_{i:03}.mid"
-
-            diatonic_song = Song(is_diatonic=True)
-            non_diatonic_song = Song(is_diatonic=False)
-
-            diatonic_song.write(diatonic_path)
-            non_diatonic_song.write(non_diatonic_path)
-
-            diatonic_info.write(f"{diatonic_song.string_info()}\n")
-            non_diatonic_info.write(f"{non_diatonic_song.string_info()}\n")

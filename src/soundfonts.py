@@ -9,7 +9,7 @@ _HARMONIC_INSTRUMENT_RANGES = [
     (16, 23),    # Organ
     (24, 31),    # Guitar
     (32, 39),    # Bass
-    (40, 47),    # Strings
+    (41, 47),    # Strings
     (48, 55),    # Ensemble
     (56, 63),    # Brass
     (64, 71),    # Reed

@@ -5,6 +5,7 @@ from sklearn.preprocessing import StandardScaler
 
 import src.paths as paths
 from src.features.chroma import extract_stft_from_dataset
+from src.features.hpcp import extract_hpcp_from_dataset
 from src.features.mfcc import  extract_mfcc_from_dataset
 
 
@@ -54,10 +55,21 @@ def load_stft_features(regen_features: bool):
     )
 
 
+def load_hpcp_features(regen_features: bool):
+    return _load_feature(
+        extract_hpcp_from_dataset,
+        feature_cache_path=paths.CACHE_DIR / "hpcp_features.npz",
+        scaler_cache_path=paths.CACHE_DIR / "hpcp_scaler.pkl",
+        regen_features=regen_features
+    )
+
+
 def load_features(mode: str, regen_features: bool):
     if mode == "stft":
         return load_stft_features(regen_features)
     elif mode == "mfcc":
         return load_mfcc_features(regen_features)
+    elif mode == "hpcp":
+        return load_hpcp_features(regen_features)
     else:
         raise ValueError(f"Invalid feature mode: {mode}")
