@@ -2,6 +2,8 @@ import os
 
 from sklearn.preprocessing import StandardScaler
 
+from src.visualization.scatter_plot import plot_mfcc_mean_vs_std
+
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"]  = "2"
 
@@ -10,7 +12,7 @@ import argparse
 from src.models.logistic_regression import train_baseline
 from src.setup.songs import NUM_DEFAULT_SONGS, setup_songs
 from src.setup.soundfonts import setup_soundfonts
-from src.models.model1 import train_model1, train_model2
+from src.models.model1 import train_model1, train_model2, plot_learning_curve_model2
 from src.models.svm import train_svm
 from src.features.chroma import extract_stft_from_dataset, extract_chord_aligned_features
 from src.features.loading import load_features
@@ -85,10 +87,12 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
-    # train_baseline(X, y)
+    plot_mfcc_mean_vs_std(X, y)
+    train_baseline(X, y)
     # train_svm(X, y)
-    model, history, ratios = train_model2(X, y)
-    plot_learning_curve(history)
+    # model, history, ratios = train_model2(X, y)
+    # plot_learning_curve(history)
+    # plot_learning_curve_model2(X, y)
 
 
 if __name__ == "__main__":

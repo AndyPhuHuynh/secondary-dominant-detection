@@ -15,8 +15,8 @@ from src.music.fluidsynth import midi_to_wave
 from src.soundfonts import get_random_soundfont_preset
 
 
-# PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
-PITCHES = ["C"]
+PITCHES = ['C', 'C#', 'D', 'E-', 'E', 'F', 'F#', 'G', 'A-', 'A', 'B-', 'B']
+# PITCHES = ["C"]
 KEYS = [music21.key.Key(p, 'major') for p in PITCHES]
 
 NUM_TRACKS:   int = 2

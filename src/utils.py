@@ -2,7 +2,7 @@ import numpy as np
 
 from sklearn.model_selection import train_test_split
 
-def split_dataset(X: np.ndarray, y: np.ndarray, val_size: int = 0.2, test_size: int = 0.2) -> \
+def split_dataset(X: np.ndarray, y: np.ndarray, val_size: float = 0.2, test_size: float = 0.2) -> \
         tuple[np.ndarray, np.ndarray, \
                 np.ndarray, np.ndarray, \
                 np.ndarray, np.ndarray]:
