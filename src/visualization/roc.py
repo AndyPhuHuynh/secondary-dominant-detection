@@ -9,7 +9,13 @@ def plot_roc_curve(model, X, y, test_size=0.2, random_state=42):
     )
 
     model.fit(X_train, y_train)
-    y_score = model.predict_proba(X_test)[:, 1]
+
+    if hasattr(model, "predict_proba"):
+        y_score = model.predict_proba(X_test)[:, 1]
+    elif hasattr(model, "decision_function"):
+        y_score = model.decision_function(X_test)
+    else:
+        raise ValueError("Model does not have predict_proba or decision_function method.")
 
     fpr, tpr, _ = roc_curve(y_test, y_score)
     roc_auc = auc(fpr, tpr)

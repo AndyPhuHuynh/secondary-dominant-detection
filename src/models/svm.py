@@ -2,6 +2,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.svm import SVC
 
+from src.features.utils import evaluate_precision_and_recall
 from src.visualization.learning_curve import plot_learning_curve
 from src.visualization.roc import plot_roc_curve
 from src.utils import split_dataset
@@ -56,3 +57,7 @@ def train_svm(X, y):
     print(f"SVM Train:      ", svm.score(X_train, y_train))
     print(f"SVM Validation: ", svm.score(X_val, y_val))
     print(f"SVM Test:       ", svm.score(X_test, y_test))
+
+    precision, recall = evaluate_precision_and_recall(svm, X_test, y_test)
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall:    {recall:.3f}")

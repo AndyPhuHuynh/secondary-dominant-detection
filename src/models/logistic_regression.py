@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+from sklearn.metrics import accuracy_score
 
+from src.features.utils import evaluate_precision_and_recall
 from src.visualization.learning_curve import plot_learning_curve
 from src.visualization.roc import plot_roc_curve
 from src.utils import split_dataset
@@ -52,7 +53,7 @@ def tune_hyperparameters(X_train, y_train, X_val, y_val):
     return best_model
 
 
-def train_baseline(X: np.ndarray, y: np.ndarray):
+def train_logistic_regression(X: np.ndarray, y: np.ndarray):
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y)
 
     model = tune_hyperparameters(X_train, y_train, X_val, y_val)
@@ -66,10 +67,9 @@ def train_baseline(X: np.ndarray, y: np.ndarray):
     print(f"Train accuracy: {train_acc * 100:.2f}%")
     print(f"Val accuracy:   {val_acc * 100:.2f}%")
     print(f"Test accuracy:  {test_acc * 100:.2f}%")
-    print("\nConfusion Matrix:")
-    print(confusion_matrix(y_test, model.predict(X_test)))
-    print("\nClassification Report:")
-    print(classification_report(y_test, model.predict(X_test),
-                                target_names=['Diatonic', 'Non-diatonic']))
+
+    precision, recall = evaluate_precision_and_recall(model, X_test, y_test)
+    print(f"Precision: {precision:.3f}")
+    print(f"Recall:    {recall:.3f}")
 
     return model

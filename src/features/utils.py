@@ -1,5 +1,6 @@
 import librosa
 from pathlib import Path
+from sklearn.metrics import precision_score, recall_score
 
 import src.constants as c
 
@@ -19,3 +20,10 @@ def get_chord_segments(signal):
         end = start + c.SAMPLES_PER_CHORD
         segments.append(signal[start:end])
     return segments
+
+
+def evaluate_precision_and_recall(model, X, y):
+    y_pred = model.predict(X)
+    precision = precision_score(y, y_pred)
+    recall = recall_score(y, y_pred)
+    return precision, recall

@@ -4,7 +4,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"]  = "2"
 
 import argparse
 
-from src.models.logistic_regression import train_baseline
+from src.models.logistic_regression import train_logistic_regression
 from src.setup.songs import NUM_DEFAULT_SONGS, setup_songs
 from src.setup.soundfonts import setup_soundfonts
 from src.models.svm import train_svm
@@ -55,7 +55,7 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
-    # train_baseline(X, y)
+    # train_logistic_regression(X, y)
     train_svm(X, y)
     # model, history, ratios = train_model2(X, y)
     # plot_learning_curve(history)
