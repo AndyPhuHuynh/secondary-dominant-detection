@@ -9,7 +9,6 @@ from src.setup.songs import NUM_DEFAULT_SONGS, setup_songs
 from src.setup.soundfonts import setup_soundfonts
 from src.models.svm import train_svm
 from src.features.loading import load_features
-from src.visualization.learning_curve import plot_learning_curve_nn_history
 from src.visualization.scatter_plot import plot_mfcc_mean_vs_std_scatter_plot, plot_tonnetz_mean_scatter_plot
 
 def main():
@@ -43,6 +42,13 @@ def main():
         ],
         help="The type of features to extract from the dataset"
     )
+
+    parser.add_argument(
+        "--model",
+        type=str,
+        required = True,
+        choices=["logistic-regression", "svm"]
+    )
     args = parser.parse_args()
 
     setup_soundfonts()
@@ -55,11 +61,14 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
-    # train_logistic_regression(X, y)
-    train_svm(X, y)
-    # model, history, ratios = train_model2(X, y)
-    # plot_learning_curve(history)
-    # plot_learning_curve_model2(X, y)
+
+
+    if args.model == "logistic-regression":
+        train_logistic_regression(X, y)
+    elif args.model == "svm":
+        train_svm(X, y)
+    else:
+        raise ValueError(f"Unknown model type: {args.model}")
 
 
 if __name__ == "__main__":

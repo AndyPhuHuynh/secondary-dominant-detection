@@ -2,8 +2,6 @@ import librosa.feature
 import numpy as np
 from pathlib import Path
 
-from tensorflow.python.autograph.pyct.static_analysis.activity import resolve
-
 import src.constants as c
 from src.features.extractor import FeatureExtractor
 from src.features.utils import load_audio_file, get_chord_segments

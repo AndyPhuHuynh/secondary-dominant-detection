@@ -4,14 +4,8 @@ matplotlib
 midiutil
 music21
 numpy
-pandas
 py7zr
 scikit-learn
-scipy
-seaborn
 sf2utils
 soundfile
-tensorflow
 tqdm
-umap-learn
-xgboost
