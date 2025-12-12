@@ -4,28 +4,16 @@ import warnings
 from sklearn.metrics.pairwise import cosine_similarity
 from tqdm import tqdm
 
+import src.constants as c
 import src.paths as paths
 from src.features.labels import get_label_string_to_num
+from src.features.utils import load_audio_file, get_chord_segments
 
 
-def get_chord_segments(signal, sr):
-    chord_length = 2
-    num_chords = 8
-    samples_per_chord = chord_length * sr
-
-    segments = []
-    for i in range(num_chords):
-        start = i * samples_per_chord
-        end = start + samples_per_chord
-        segments.append(signal[start:end])
-
-    return segments
-
-
-def compute_hpcp(signal, sr):
+def compute_hpcp(signal):
     with warnings.catch_warnings():
         warnings.filterwarnings('ignore')
-        chroma = librosa.feature.chroma_cqt(y=signal, sr=sr)
+        chroma = librosa.feature.chroma_cqt(y=signal, sr=c.SAMPLE_RATE)
     hpcp_mean = np.mean(chroma, axis=1)
     hpcp_std  = np.std(chroma, axis=1)
     return hpcp_mean, hpcp_std
@@ -42,15 +30,13 @@ def extract_hpcp_from_dataset(sample_rate: int):
         label_num = get_label_string_to_num(path.name)
         for filepath in tqdm(list(path.iterdir()), desc=f"Extracting hpcp for {path.name:<15}"):
             try:
-                EXPECTED_SAMPLES = 16 * sample_rate # Eights chords each lasting for two seconds
-                signal, sr = librosa.load(filepath, sr=sample_rate)
-                signal = signal[:EXPECTED_SAMPLES]
-                segments = get_chord_segments(signal, sr)
+                signal = load_audio_file(filepath)
+                segments = get_chord_segments(signal)
 
                 hpcp_means = []
                 hpcp_stds = []
                 for seg in segments:
-                    hpcp_mean, hpcp_std = compute_hpcp(seg, sr)
+                    hpcp_mean, hpcp_std = compute_hpcp(seg)
                     hpcp_means.append(hpcp_mean)
                     hpcp_stds.append(hpcp_std)
                 hpcp_means = np.array(hpcp_means)

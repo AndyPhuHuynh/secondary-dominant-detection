@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import src.paths as paths
 from src.features.chroma import extract_stft_from_dataset
 from src.features.hpcp import extract_hpcp_from_dataset
-from src.features.mfcc import  extract_mfcc_from_dataset
+from src.features.mfcc import GlobalMFCCExtractor
 
 
 def _load_feature(
@@ -38,12 +38,7 @@ def _load_feature(
 
 
 def load_mfcc_features(regen_features: bool):
-    return _load_feature(
-        extract_mfcc_from_dataset,
-        feature_cache_path = paths.CACHE_DIR / "mfcc_features.npz",
-        scaler_cache_path = paths.CACHE_DIR / "mfcc_scaler.pkl",
-        regen_features = regen_features
-    )
+    return GlobalMFCCExtractor.load_features(regen_features)
 
 
 def load_stft_features(regen_features: bool):
