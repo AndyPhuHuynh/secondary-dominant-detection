@@ -1,4 +1,4 @@
-import librosa
+import librosa.feature
 import numpy as np
 from pathlib import Path
 
@@ -36,10 +36,8 @@ def mfcc_feature_index(mfcc_index, chord_index, stat_index):
 
 def extract_mfcc_features(signal):
     mfcc = librosa.feature.mfcc(y=signal, sr=c.SAMPLE_RATE, n_mfcc=NUM_MFCCS)
-
     mean = np.mean(mfcc, axis=1)
     std = np.std(mfcc, axis=1)
-
     return np.concatenate((mean, std))
 
 

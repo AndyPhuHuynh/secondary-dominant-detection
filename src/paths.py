@@ -1,4 +1,3 @@
-import random
 from pathlib import Path
 
 PROJECT_DIR: Path = Path(__file__).resolve().parent.parent
@@ -29,3 +28,4 @@ INFO_NON_DIATONIC_TXT: Path = INFO_DIR / "non-diatonic.txt"
 
 # GRAPHS
 GRAPHS_MFCC_DIR: Path = GRAPHS_DIR / "mfcc"
+GRAPHS_TONNETZ_DIR: Path = GRAPHS_DIR / "tonnetz"

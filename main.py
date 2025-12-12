@@ -13,7 +13,7 @@ from src.features.chroma import extract_stft_from_dataset, extract_chord_aligned
 from src.features.loading import load_features
 from src.utils import split_dataset
 from src.visualization.learning_curve import plot_learning_curve
-from src.visualization.scatter_plot import plot_mfcc_box, plot_mfcc_mean_vs_std
+from src.visualization.scatter_plot import plot_mfcc_mean_vs_std_scatter_plot, plot_tonnetz_mean_scatter_plot
 
 
 def run_iteration():
@@ -68,7 +68,10 @@ def main():
         "--feature-type",
         type=str,
         required=True,
-        choices=["global-mfcc", "per-chord-mfcc", "stft", "hpcp"],
+        choices=[
+            "global-mfcc", "per-chord-mfcc",
+            "global-tonnetz", "per-chord-tonnetz", "tonnetz-contrast",
+            "stft", "hpcp"],
         help="The type of features to extract from the dataset"
     )
     args = parser.parse_args()
@@ -83,15 +86,12 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
-    plot_mfcc_mean_vs_std(X, y)
-    for mfcc_index in range(13):
-        for stat_index in range(2):
-            plot_mfcc_box(X, y, mfcc_index, stat_index, show_plot=False)
+    # plot_tonnetz_mean_scatter_plot(X, y)
 
-    # train_baseline(X, y)
-    # train_svm(X, y)
-    # model, history, ratios = train_model2(X, y)
-    # plot_learning_curve(history)
+    train_baseline(X, y)
+    train_svm(X, y)
+    model, history, ratios = train_model2(X, y)
+    plot_learning_curve(history)
     # plot_learning_curve_model2(X, y)
 
 

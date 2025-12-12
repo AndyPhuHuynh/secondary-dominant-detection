@@ -7,6 +7,7 @@ import src.paths as paths
 from src.features.chroma import extract_stft_from_dataset
 from src.features.hpcp import extract_hpcp_from_dataset
 from src.features.mfcc import GlobalMFCCExtractor, PerChordMFCCExtractor
+from src.features.tonnetz import GlobalTonnetzExtractor, PerChordTonnetzExtractor, TonnetzContrastExtractor
 
 
 def _load_feature(
@@ -45,6 +46,14 @@ def load_per_chord_mfcc(regen_features: bool):
     return PerChordMFCCExtractor.load_features(regen_features)
 
 
+def load_global_tonnetz_features(regen_features: bool):
+    return GlobalTonnetzExtractor.load_features(regen_features)
+
+
+def load_per_chord_tonnetz_features(regen_features: bool):
+    return PerChordTonnetzExtractor.load_features(regen_features)
+
+
 def load_stft_features(regen_features: bool):
     return _load_feature(
         extract_stft_from_dataset,
@@ -70,6 +79,12 @@ def load_features(mode: str, regen_features: bool):
         return load_mfcc_features(regen_features)
     elif mode == "per-chord-mfcc":
         return load_per_chord_mfcc(regen_features)
+    elif mode == "global-tonnetz":
+        return load_global_tonnetz_features(regen_features)
+    elif mode == "per-chord-tonnetz":
+        return load_per_chord_tonnetz_features(regen_features)
+    elif mode == "tonnetz-contrast":
+        return TonnetzContrastExtractor.load_features(regen_features)
     elif mode == "hpcp":
         return load_hpcp_features(regen_features)
     else:
