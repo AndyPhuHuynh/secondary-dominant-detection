@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import src.paths as paths
 from src.features.hpcp import HPCPExtractor, HPCPAndTonnetzExtractor
 from src.features.mfcc import GlobalMFCCExtractor, PerChordMFCCExtractor
-from src.features.tonnetz import GlobalTonnetzExtractor, PerChordTonnetzExtractor, TonnetzContrastExtractor
+from src.features.tonnetz import GlobalTonnetzExtractor, PerChordTonnetzExtractor
 
 
 def _load_feature(
@@ -62,8 +62,6 @@ def load_features(mode: str, regen_features: bool):
         return load_global_tonnetz_features(regen_features)
     elif mode == "per-chord-tonnetz":
         return load_per_chord_tonnetz_features(regen_features)
-    elif mode == "tonnetz-contrast":
-        return TonnetzContrastExtractor.load_features(regen_features)
     elif mode == "hpcp":
         return HPCPExtractor.load_features(regen_features)
     elif mode == "hpcp-tonnetz":

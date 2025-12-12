@@ -52,37 +52,3 @@ class PerChordTonnetzExtractor(FeatureExtractor):
         segments = get_chord_segments(signal)
         features = np.array([extract_tonnetz_features(seg) for seg in segments])
         return features.flatten()
-
-
-class TonnetzContrastExtractor(FeatureExtractor):
-    FEATURE_NAME = "tonnetz_contrast"
-
-    @classmethod
-    def extract_features_from_file(cls, filepath: Path):
-        signal = load_audio_file(filepath)
-        segments = get_chord_segments(signal)
-        tonnetz = np.array([librosa.feature.tonnetz(y=seg, sr=c.SAMPLE_RATE).mean(axis=1) for seg in segments])
-
-        delta = tonnetz[1:] - tonnetz[:-1]
-        d = np.linalg.norm(delta, axis=1)
-
-        mean_step = d.mean()
-        max_step = d.max()
-        std_step = d.std()
-        sum_step = d.sum()
-        step_stats = np.array([mean_step, max_step, std_step, sum_step])
-
-        k = int(np.argmax(d))
-        mu_pre = tonnetz[:k + 1].mean(axis=0)
-        mu_post = tonnetz[k + 1:].mean(axis=0) if k + 1 < len(tonnetz) else tonnetz[-1]
-        prepost = np.linalg.norm(mu_post - mu_pre)
-
-        eps = 1e-8
-        sorted_d = np.sort(d)
-        peak_ratio = sorted_d[-1] / (d.mean() + eps)
-        peak_minus_mean = sorted_d[-1] - d.mean()
-        two_peak_sum = sorted_d[-1] + sorted_d[-2]
-        resolution_contrast = np.array([peak_ratio, peak_minus_mean, two_peak_sum])
-
-        return np.concatenate((step_stats, np.array([prepost]), resolution_contrast))
-

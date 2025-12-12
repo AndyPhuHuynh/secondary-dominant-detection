@@ -4,11 +4,12 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"]  = "2"
 
 import argparse
 
-from src.models.logistic_regression import train_logistic_regression
 from src.setup.songs import NUM_DEFAULT_SONGS, setup_songs
 from src.setup.soundfonts import setup_soundfonts
+from src.models.logistic_regression import train_logistic_regression
 from src.models.svm import train_svm
 from src.features.loading import load_features
+from src.visualization.box_plot import plot_mfcc_per_chord_box_plot
 from src.visualization.scatter_plot import plot_mfcc_mean_vs_std_scatter_plot, plot_tonnetz_mean_scatter_plot
 
 def main():
@@ -37,7 +38,7 @@ def main():
         required=True,
         choices=[
             "global-mfcc", "per-chord-mfcc",
-            "global-tonnetz", "per-chord-tonnetz", "tonnetz-contrast",
+            "global-tonnetz", "per-chord-tonnetz",
             "hpcp", "hpcp-tonnetz"
         ],
         help="The type of features to extract from the dataset"
@@ -61,6 +62,12 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
+    if args.feature_type == "global-mfcc":
+        plot_mfcc_mean_vs_std_scatter_plot(X, y)
+    elif args.feature_type == "per-chord-mfcc":
+        plot_mfcc_per_chord_box_plot(X, y)
+    elif args.feature_type == "global-tonnetz":
+        plot_tonnetz_mean_scatter_plot(X, y)
 
 
     if args.model == "logistic-regression":

@@ -3,10 +3,10 @@ import numpy as np
 
 import src.constants as c
 import src.paths as paths
-from src.features.mfcc import mfcc_feature_index, mfcc_stat_index_to_str
+from src.features.mfcc import NUM_MFCCS, NUM_MFCC_STATS, mfcc_feature_index, mfcc_stat_index_to_str
 
 
-def plot_mfcc_per_chord_box_plot(X, y, mfcc_index, stat_index, show_plot: bool):
+def _plot_single_mfcc_per_chord_box_plot(X, y, mfcc_index, stat_index):
     positions_diatonic = np.arange(1, c.NUM_CHORDS + 1) - 0.2
     positions_non_diatonic = np.arange(1, c.NUM_CHORDS + 1) + 0.2
 
@@ -50,8 +50,8 @@ def plot_mfcc_per_chord_box_plot(X, y, mfcc_index, stat_index, show_plot: bool):
         labels=[str(i) for i in chord_positions]
     )
     plt.xlabel("Chord Index")
-    plt.ylabel(f"MFCC{mfcc_index+1} {mfcc_stat_index_to_str(stat_index)}")
-    plt.title(f"Per-Chord Distribution of MFCC{mfcc_index+1} {mfcc_stat_index_to_str(stat_index)}")
+    plt.ylabel(f"MFCC{mfcc_index + 1} {mfcc_stat_index_to_str(stat_index)}")
+    plt.title(f"Per-Chord Distribution of MFCC{mfcc_index + 1} {mfcc_stat_index_to_str(stat_index)}")
 
     plt.legend(
         [bp1["boxes"][0], bp2["boxes"][0]],
@@ -60,10 +60,13 @@ def plot_mfcc_per_chord_box_plot(X, y, mfcc_index, stat_index, show_plot: bool):
 
     plt.tight_layout()
 
-    if show_plot:
-        plt.show()
-    else:
-        paths.GRAPHS_MFCC_DIR.mkdir(exist_ok=True, parents=True)
-        filename = paths.GRAPHS_MFCC_DIR / f"per-chord_distribution_of_mfcc{mfcc_index+1}_{mfcc_stat_index_to_str(stat_index)}_box_plot"
-        plt.savefig(filename)
-        plt.close()
+    paths.GRAPHS_MFCC_DIR.mkdir(exist_ok=True, parents=True)
+    filename = paths.GRAPHS_MFCC_DIR / f"per-chord_distribution_of_mfcc{mfcc_index + 1}_{mfcc_stat_index_to_str(stat_index)}_box_plot"
+    plt.savefig(filename)
+    plt.close()
+
+
+def plot_mfcc_per_chord_box_plot(X, y):
+    for mfcc_index in range(NUM_MFCCS):
+        for stat_index in range(NUM_MFCC_STATS):
+            _plot_single_mfcc_per_chord_box_plot(X, y, mfcc_index, stat_index)
