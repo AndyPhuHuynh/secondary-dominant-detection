@@ -1,107 +1,63 @@
 import matplotlib.pyplot as plt
 import numpy as np
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.model_selection import learning_curve
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
+from src.visualization.learning_curve import plot_learning_curve
+from src.visualization.roc import plot_roc_curve
 from src.utils import split_dataset
 
 
-def plot_learning_curve(model, X_train, y_train, X_val, y_val):
-    """Generate and plot learning curves for training and validation sets"""
-    train_sizes = np.linspace(0.1, 1.0, 10)
-
-    train_sizes_abs, train_scores, val_scores = learning_curve(
-        model, X_train, y_train,
-        train_sizes=train_sizes,
-        cv=5,
-        scoring='accuracy',
-        n_jobs=-1,
-        random_state=42
-    )
-
-    train_mean = np.mean(train_scores, axis=1)
-    train_std = np.std(train_scores, axis=1)
-    val_mean = np.mean(val_scores, axis=1)
-    val_std = np.std(val_scores, axis=1)
-
-    plt.figure(figsize=(10, 6))
-    plt.plot(train_sizes_abs, train_mean, 'o-', color='r', label='Training score')
-    plt.plot(train_sizes_abs, val_mean, 'o-', color='g', label='Cross-validation score')
-
-    plt.fill_between(train_sizes_abs, train_mean - train_std, train_mean + train_std,
-                     alpha=0.1, color='r')
-    plt.fill_between(train_sizes_abs, val_mean - val_std, val_mean + val_std,
-                     alpha=0.1, color='g')
-
-    plt.xlabel('Training Set Size')
-    plt.ylabel('Accuracy Score')
-    plt.title('Learning Curves')
-    plt.legend(loc='best')
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-
-
 def tune_hyperparameters(X_train, y_train, X_val, y_val):
-    c_values = [0.001, 0.01, 0.1, 1, 10, 100]
-    best_score = 0
-    best_c = None
-    best_model = None
+    C_values = np.logspace(-4, 4, 10)
 
-    results = []
+    train_scores = []
+    val_scores = []
 
-    for c in c_values:
-        model = LogisticRegression(
-            C=c,
-            max_iter=1000,
-            random_state=0
-        )
+    for C in C_values:
+        model = LogisticRegression(C=C, max_iter=1000, random_state=42)
         model.fit(X_train, y_train)
 
-        train_score = model.score(X_train, y_train)
-        val_score = model.score(X_val, y_val)
+        train_pred = model.predict(X_train)
+        val_pred = model.predict(X_val)
 
-        results.append({
-            "C": c,
-            "train_acc": train_score,
-            "val_acc": val_score
-        })
+        train_scores.append(accuracy_score(y_train, train_pred))
+        val_scores.append(accuracy_score(y_val, val_pred))
 
-        print(f"C={c:2.2f}, Train: {train_score*100:.2f}, Val: {val_score*100:.2f}")
-        if val_score > best_score:
-            best_score = val_score
-            best_c = c
-            best_model = model
+    # Find best C value based on validation accuracy
+    best_idx = np.argmax(val_scores)
+    best_C = C_values[best_idx]
+    best_val_acc = val_scores[best_idx]
 
-    print(f"Best C value is: {best_c}")
-    return best_model, best_c, results
+    print(f"Best C value: {best_C:.4f}")
+    print(f"Best validation accuracy: {best_val_acc:.4f}")
 
-
-def plot_validation_curve(results):
-    """Plot training vs validation accuracy for different C values"""
-    C_values = [r['C'] for r in results]
-    train_accs = [r['train_acc'] for r in results]
-    val_accs = [r['val_acc'] for r in results]
-
+    # Plot results
     plt.figure(figsize=(10, 6))
-    plt.semilogx(C_values, train_accs, 'o-', label='Training accuracy', linewidth=2)
-    plt.semilogx(C_values, val_accs, 's-', label='Validation accuracy', linewidth=2)
-    plt.xlabel('C (Regularization parameter)')
+    plt.semilogx(C_values, train_scores, label='Training Accuracy', marker='o', markersize=3)
+    plt.semilogx(C_values, val_scores, label='Validation Accuracy', marker='o', markersize=3)
+    plt.axvline(best_C, color='red', linestyle='--', label=f'Best C = {best_C:.4f}')
+    plt.xlabel('C (Regularization Parameter)')
     plt.ylabel('Accuracy')
-    plt.title('Validation Curve: Model Performance vs Regularization')
-    plt.legend(loc='best')
+    plt.title('Logistic Regression: Accuracy vs C Hyperparameter')
+    plt.legend()
     plt.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.show()
+
+    # Train final model with best C
+    best_model = LogisticRegression(C=best_C, max_iter=1000, random_state=42)
+    best_model.fit(X_train, y_train)
+
+    return best_model
 
 
 def train_baseline(X: np.ndarray, y: np.ndarray):
     X_train, y_train, X_val, y_val, X_test, y_test = split_dataset(X, y)
 
-    model, c, results = tune_hyperparameters(X_train, y_train, X_val, y_val)
-    plot_validation_curve(results)
-    plot_learning_curve(model, X_train, y_train, X_val, y_val)
+    model = tune_hyperparameters(X_train, y_train, X_val, y_val)
+    plot_learning_curve(model, X, y)
+    plot_roc_curve(model, X, y)
 
     train_acc = model.score(X_train, y_train)
     val_acc = model.score(X_val, y_val)

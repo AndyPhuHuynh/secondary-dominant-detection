@@ -7,42 +7,10 @@ import argparse
 from src.models.logistic_regression import train_baseline
 from src.setup.songs import NUM_DEFAULT_SONGS, setup_songs
 from src.setup.soundfonts import setup_soundfonts
-from src.models.model1 import train_model1, train_model2, plot_learning_curve_model2
 from src.models.svm import train_svm
-from src.features.chroma import extract_stft_from_dataset, extract_chord_aligned_features
 from src.features.loading import load_features
-from src.utils import split_dataset
-from src.visualization.learning_curve import plot_learning_curve
+from src.visualization.learning_curve import plot_learning_curve_nn_history
 from src.visualization.scatter_plot import plot_mfcc_mean_vs_std_scatter_plot, plot_tonnetz_mean_scatter_plot
-
-
-def run_iteration():
-    # scaler, X, y = extract_mfcc_from_dataset(44100)
-    scaler, X, y = extract_stft_from_dataset(44100)
-    model, history, ratios = train_model1(X, y)
-    return ratios
-
-
-def run_iterations():
-    ratio_iterations = []
-    num_iterations = 1
-    for i in range(num_iterations):
-        ratio = run_iteration()
-        ratio_iterations.append(ratio)
-
-    diatonic_sum = 0
-    non_diatonic_sum = 0
-    for i in range(num_iterations):
-        diatonic_sum += ratio_iterations[i][0]
-        non_diatonic_sum += ratio_iterations[i][1]
-
-        print(f"Iteration {i:>3}")
-        print(f"    Diatonic:     {ratio_iterations[i][0]:.2f}")
-        print(f"    Non-diatonic: {ratio_iterations[i][1]:.2f}")
-
-    print(f"\nDiatonic average:     {float(diatonic_sum)/num_iterations:.2f}")
-    print(  f"Non-diatonic average: {float(non_diatonic_sum)/num_iterations:.2f}")
-
 
 def main():
     parser = argparse.ArgumentParser(
@@ -71,7 +39,8 @@ def main():
         choices=[
             "global-mfcc", "per-chord-mfcc",
             "global-tonnetz", "per-chord-tonnetz", "tonnetz-contrast",
-            "stft", "hpcp"],
+            "hpcp", "hpcp-tonnetz"
+        ],
         help="The type of features to extract from the dataset"
     )
     args = parser.parse_args()
@@ -86,12 +55,10 @@ def main():
     setup_songs(song_count, force_song_setup)
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
-    # plot_tonnetz_mean_scatter_plot(X, y)
-
-    train_baseline(X, y)
+    # train_baseline(X, y)
     train_svm(X, y)
-    model, history, ratios = train_model2(X, y)
-    plot_learning_curve(history)
+    # model, history, ratios = train_model2(X, y)
+    # plot_learning_curve(history)
     # plot_learning_curve_model2(X, y)
 
 

@@ -4,8 +4,7 @@ from pathlib import Path
 from sklearn.preprocessing import StandardScaler
 
 import src.paths as paths
-from src.features.chroma import extract_stft_from_dataset
-from src.features.hpcp import extract_hpcp_from_dataset
+from src.features.hpcp import HPCPExtractor, HPCPAndTonnetzExtractor
 from src.features.mfcc import GlobalMFCCExtractor, PerChordMFCCExtractor
 from src.features.tonnetz import GlobalTonnetzExtractor, PerChordTonnetzExtractor, TonnetzContrastExtractor
 
@@ -54,28 +53,8 @@ def load_per_chord_tonnetz_features(regen_features: bool):
     return PerChordTonnetzExtractor.load_features(regen_features)
 
 
-def load_stft_features(regen_features: bool):
-    return _load_feature(
-        extract_stft_from_dataset,
-        feature_cache_path=paths.CACHE_DIR / "stft_features.npz",
-        scaler_cache_path=paths.CACHE_DIR / "stft_scaler.pkl",
-        regen_features=regen_features
-    )
-
-
-def load_hpcp_features(regen_features: bool):
-    return _load_feature(
-        extract_hpcp_from_dataset,
-        feature_cache_path=paths.CACHE_DIR / "hpcp_features.npz",
-        scaler_cache_path=paths.CACHE_DIR / "hpcp_scaler.pkl",
-        regen_features=regen_features
-    )
-
-
 def load_features(mode: str, regen_features: bool):
-    if mode == "stft":
-        return load_stft_features(regen_features)
-    elif mode == "global-mfcc":
+    if mode == "global-mfcc":
         return load_mfcc_features(regen_features)
     elif mode == "per-chord-mfcc":
         return load_per_chord_mfcc(regen_features)
@@ -86,6 +65,8 @@ def load_features(mode: str, regen_features: bool):
     elif mode == "tonnetz-contrast":
         return TonnetzContrastExtractor.load_features(regen_features)
     elif mode == "hpcp":
-        return load_hpcp_features(regen_features)
+        return HPCPExtractor.load_features(regen_features)
+    elif mode == "hpcp-tonnetz":
+        return HPCPAndTonnetzExtractor.load_features(regen_features)
     else:
         raise ValueError(f"Invalid feature mode: {mode}")
