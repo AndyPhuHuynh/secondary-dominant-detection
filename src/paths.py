@@ -26,3 +26,6 @@ TEMP_FLUIDSYNTH_FSC: Path = TEMP_DIR / "select.fsc"
 # INFO
 INFO_DIATONIC_TXT:     Path = INFO_DIR / "diatonic.txt"
 INFO_NON_DIATONIC_TXT: Path = INFO_DIR / "non-diatonic.txt"
+
+# GRAPHS
+GRAPHS_MFCC_DIR: Path = GRAPHS_DIR / "mfcc"

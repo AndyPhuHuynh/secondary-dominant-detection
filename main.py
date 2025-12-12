@@ -1,9 +1,4 @@
 import os
-
-from sklearn.preprocessing import StandardScaler
-
-from src.visualization.scatter_plot import plot_mfcc_mean_vs_std
-
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 os.environ["TF_CPP_MIN_LOG_LEVEL"]  = "2"
 
@@ -18,6 +13,7 @@ from src.features.chroma import extract_stft_from_dataset, extract_chord_aligned
 from src.features.loading import load_features
 from src.utils import split_dataset
 from src.visualization.learning_curve import plot_learning_curve
+from src.visualization.scatter_plot import plot_mfcc_box, plot_mfcc_mean_vs_std
 
 
 def run_iteration():
@@ -72,7 +68,7 @@ def main():
         "--feature-type",
         type=str,
         required=True,
-        choices=["mfcc", "stft", "hpcp"],
+        choices=["global-mfcc", "per-chord-mfcc", "stft", "hpcp"],
         help="The type of features to extract from the dataset"
     )
     args = parser.parse_args()
@@ -88,7 +84,11 @@ def main():
 
     scaler, X, y = load_features(args.feature_type, args.regen_features or force_song_setup)
     plot_mfcc_mean_vs_std(X, y)
-    train_baseline(X, y)
+    for mfcc_index in range(13):
+        for stat_index in range(2):
+            plot_mfcc_box(X, y, mfcc_index, stat_index, show_plot=False)
+
+    # train_baseline(X, y)
     # train_svm(X, y)
     # model, history, ratios = train_model2(X, y)
     # plot_learning_curve(history)

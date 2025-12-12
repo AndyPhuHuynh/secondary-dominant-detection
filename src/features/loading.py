@@ -6,7 +6,7 @@ from sklearn.preprocessing import StandardScaler
 import src.paths as paths
 from src.features.chroma import extract_stft_from_dataset
 from src.features.hpcp import extract_hpcp_from_dataset
-from src.features.mfcc import GlobalMFCCExtractor
+from src.features.mfcc import GlobalMFCCExtractor, PerChordMFCCExtractor
 
 
 def _load_feature(
@@ -41,6 +41,10 @@ def load_mfcc_features(regen_features: bool):
     return GlobalMFCCExtractor.load_features(regen_features)
 
 
+def load_per_chord_mfcc(regen_features: bool):
+    return PerChordMFCCExtractor.load_features(regen_features)
+
+
 def load_stft_features(regen_features: bool):
     return _load_feature(
         extract_stft_from_dataset,
@@ -62,8 +66,10 @@ def load_hpcp_features(regen_features: bool):
 def load_features(mode: str, regen_features: bool):
     if mode == "stft":
         return load_stft_features(regen_features)
-    elif mode == "mfcc":
+    elif mode == "global-mfcc":
         return load_mfcc_features(regen_features)
+    elif mode == "per-chord-mfcc":
+        return load_per_chord_mfcc(regen_features)
     elif mode == "hpcp":
         return load_hpcp_features(regen_features)
     else:
