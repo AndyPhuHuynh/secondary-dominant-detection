@@ -36,7 +36,7 @@ This can be any of the following:
     - `hpcp`: Uses concatenated per-chord averaged HPCP features.
     - `hpcp-tonnetz`: Uses concatenated per-chord averaged HPCP and Tonnetz features combined.
 
-- `--model-type [type]`: Specifies a specific machine learning model to use for secondary dominant detection.
+- `--model [type]`: Specifies a specific machine learning model to use for secondary dominant detection.
 This can be any of the following:
     - `logistic-regression`: Uses a Logistic Regression model.
     - `svm`: Uses a Support Vector Machine model.
@@ -60,8 +60,8 @@ new graphs will be generated and saved in this directory, overwriting any existi
 ## Main Experiment
 The main experiment reported in the paper can be reproduced by running the following commands:
 ```bash
-    python main.py --feature-type hpcp-tonnetz --gen-songs 2000 --model-type svm
-    python main.py --feature-type hpcp-tonnetz --model-type logistic-regression
+    python main.py --feature-type hpcp-tonnetz --gen-songs 2000 --model svm
+    python main.py --feature-type hpcp-tonnetz --model logistic-regression
 ```
 
 Graphs are opened automatically after the experiment is complete and accuracy results are printed to the console.

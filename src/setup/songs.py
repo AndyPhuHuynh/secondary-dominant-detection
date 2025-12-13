@@ -43,5 +43,5 @@ def setup_songs(num_songs: int = NUM_DEFAULT_SONGS, force_setup: bool = False):
     if not force_setup and songs_exist:
         return
 
-    shutil.rmtree(paths.CACHE_DIR)
+    shutil.rmtree(paths.CACHE_DIR, ignore_errors=True)
     generate_songs(num_songs)
